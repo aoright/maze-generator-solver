@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>迷宫生成与求解器</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🎯 迷宫生成与求解器</h1>
+            <p class="subtitle">可视化算法学习工具</p>
+        </header>
+
+        <div class="main-content">
+            <div class="controls-panel">
+                <div class="control-section">
+                    <h3>🎨 主题</h3>
+                    <select id="themeSelect" class="control-select">
+                        <option value="classic">经典</option>
+                        <option value="neon">霜虹</option>
+                        <option value="nature">自然</option>
+                        <option value="cyberpunk">赛博朋克</option>
+                        <option value="minimal">极简</option>
+                    </select>
+                </div>
+
+                <div class="control-section">
+                    <h3>🎮 游戏模式</h3>
+                    <div class="game-mode-toggle">
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="gameModeToggle">
+                            <span class="toggle-slider"></span>
+                        </label>
+                        <span id="gameModeStatus" class="toggle-label">关闭</span>
+                    </div>
+                    <p class="toggle-hint">使用方向键控制角色移动</p>
+                    <p class="toggle-hint" id="stairsHint" style="display: none;">PageUp/PageDown 或 U/D 键上下楼梯</p>
+                    <p class="hex-controls-hint" id="hexControlsHint">六边形迷宫：使用WASD键和QE键移动</p>
+                </div>
+
+                <div class="control-section">
+                    <h3>🎭️ 迷宫类型</h3>
+                    <select id="mazeTypeSelect" class="control-select">
+                        <option value="standard">标准迷宫</option>
+                        <option value="multilayer">多层3D迷宫</option>
+                        <option value="weighted">加权迷宫</option>
+                        <option value="dynamic">动态迷宫</option>
+                        <option value="hex">六边形迷宫</option>
+                        <option value="circular">环形迷宫</option>
+                        <!--
+                        <option value="island">岛屿迷宫</option>
+                    -->
+                        <option value="portal">传送门迷宫</option>
+                        <option value="quantum">量子迷宫</option>
+                        <option value="relativity">相对论迷宫</option>
+                        <option value="4d">四维迷宫</option>
+                        <option value="chaos">混沌迷宫</option>
+                        <option value="infinite">无限迷宫</option>
+                    </select>
+                    <div class="control-group" id="layersControl" style="display:none; margin-top: 10px;">
+                        <label>层数: <span id="layersValue">3</span></label>
+                        <input type="range" id="layersInput" min="2" max="10" value="3">
+                        <div class="layer-nav" style="margin-top: 10px; display: flex; gap: 5px;">
+                            <button id="prevLayerBtn" class="btn btn-info" style="flex: 1; padding: 8px;">← 上一层</button>
+                            <button id="nextLayerBtn" class="btn btn-info" style="flex: 1; padding: 8px;">下一层 →</button>
+                        </div>
+                    </div>
+                    <div class="control-group" id="ringsControl" style="display:none; margin-top: 10px;">
+                        <label>环数: <span id="ringsValue">10</span></label>
+                        <input type="range" id="ringsInput" min="3" max="50" value="10">
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3>📐 迷宫尺寸</h3>
+                    <div class="control-group">
+                        <label>行数: <span id="rowsValue">20</span></label>
+                        <input type="range" id="rowsInput" min="5" max="50" value="20">
+                    </div>
+                    <div class="control-group">
+                        <label>列数: <span id="colsValue">20</span></label>
+                        <input type="range" id="colsInput" min="5" max="50" value="20">
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3>🎲 生成算法</h3>
+                    <select id="generatorSelect" class="control-select">
+                        <option value="recursiveBacktracking">递归回溯 (最简单)</option>
+                        <option value="prim">Prim算法</option>
+                        <option value="kruskal">Kruskal算法</option>
+                        <option value="recursiveDivision">递归分割</option>
+                        <option value="wilson">Wilson算法</option>
+                        <option value="eller">Eller算法</option>
+                        <option value="binaryTree">二叉树</option>
+                        <option value="sidewinder">Sidewinder</option>
+                    </select>
+                    <button id="generateBtn" class="btn btn-primary">生成迷宫</button>
+                </div>
+
+                <div class="control-section">
+                    <h3>🔍 求解算法</h3>
+                    <select id="solverSelect" class="control-select">
+                        <option value="bfs">广度优先搜索 (BFS)</option>
+                        <option value="dfs">深度优先搜索 (DFS)</option>
+                        <option value="astar">A* 算法</option>
+                        <option value="dijkstra">Dijkstra算法</option>
+                        <option value="bidirectionalBFS">双向BFS</option>
+                        <option value="greedy">贪心最佳优先</option>
+                        <option value="jps">跳点搜索 (JPS)</option>
+                    </select>
+                    <button id="solveBtn" class="btn btn-success">求解迷宫</button>
+                </div>
+
+                <div class="control-section">
+                    <h3>⚡ 动画速度</h3>
+                    <div class="speed-controls">
+                        <button class="btn-speed" data-speed="1">极慢</button>
+                        <button class="btn-speed" data-speed="5">慢</button>
+                        <button class="btn-speed active" data-speed="10">中</button>
+                        <button class="btn-speed" data-speed="20">快</button>
+                        <button class="btn-speed" data-speed="0">瞬间</button>
+                    </div>
+                </div>
+
+                <div class="control-section">
+                    <h3>🎮 操作</h3>
+                    <button id="clearBtn" class="btn btn-warning">清除路径</button>
+                    <button id="resetBtn" class="btn btn-danger">重置迷宫</button>
+                    <button id="exportBtn" class="btn btn-info">导出PNG</button>
+                </div>
+
+                <div class="control-section">
+                    <h3>🛠️ 高级功能</h3>
+                    <button id="compareBtn" class="btn btn-info">算法对比</button>
+                    <button id="distanceMapBtn" class="btn btn-info">距离图</button>
+                    <button id="editorBtn" class="btn btn-warning">手动编辑</button>
+                    <button id="fogModeBtn" class="btn btn-success">迷雾模式</button>
+                    <button id="timeTrialBtn" class="btn btn-danger">限时挑战</button>
+                </div>
+
+                <div class="control-section">
+                    <h3>🚀 扩展功能</h3>
+                    <button id="exportJSONBtn" class="btn btn-info">导出JSON</button>
+                    <button id="exportSVGBtn" class="btn btn-info">导出SVG</button>
+                    <button id="heatmapBtn" class="btn btn-warning">热力图</button>
+                </div>
+            </div>
+
+            <div class="canvas-section">
+                <div class="maze-description" id="mazeDescription">
+                    <h3 id="mazeDescTitle">迷宫说明</h3>
+                    <p id="mazeDescText">选择一种迷宫类型开始探索。</p>
+                </div>
+                <canvas id="mazeCanvas"></canvas>
+                <div class="canvas-overlay" id="canvasOverlay">
+                    <p>点击"生成迷宫"开始</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="info-panel">
+            <div class="info-item">
+                <span class="info-label">状态:</span>
+                <span id="statusText" class="info-value">就绪</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">路径长度:</span>
+                <span id="pathLength" class="info-value">-</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">访问节点:</span>
+                <span id="visitedNodes" class="info-value">-</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">生成时间:</span>
+                <span id="genTime" class="info-value">-</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">求解时间:</span>
+                <span id="solveTime" class="info-value">-</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- 核心系统 -->
+    <script src="js/maze.js"></script>
+    <script src="js/generator.js"></script>
+    <script src="js/solver.js"></script>
+    <script src="js/renderer.js"></script>
+    
+    <!-- 第7阶段：高级扩展 -->
+    <script src="js/extensions-advanced.js"></script>
+    
+    <!-- 第8阶段：复杂迷宫 -->
+    <script src="js/complex-mazes.js"></script>
+    <script src="js/complex-renderer.js"></script>
+    
+    <!-- 第9阶段：超复杂迷宫 -->
+    <script src="js/advanced-mazes.js"></script>
+    
+    <!-- 控制器和主应用 -->
+    <script src="js/extensions.js"></script>
+    <script src="js/main-controller.js"></script>
+    <!-- controls.js 已被 main-controller.js 替代 -->
+</body>
+</html>

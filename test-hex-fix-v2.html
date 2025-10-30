@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>六边形迷宫游戏模式修复测试 v2</title>
+    <style>
+        body { 
+            margin: 0; 
+            padding: 20px; 
+            background: #1a1a1a; 
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        canvas { 
+            border: 2px solid #fff; 
+            background: #000; 
+            display: block;
+            margin: 20px 0;
+        }
+        .controls {
+            margin: 20px 0;
+        }
+        button {
+            padding: 10px 15px;
+            margin: 5px;
+            background: #4a90e2;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background: #3a80d2;
+        }
+        .instructions {
+            background: #333;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+        #status {
+            padding: 10px;
+            background: #222;
+            border-radius: 5px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <h1>六边形迷宫游戏模式修复测试 v2</h1>
+    
+    <div class="instructions">
+        <h3>操作说明：</h3>
+        <p><strong>WASD / 方向键</strong> - 移动（六边形方向）</p>
+        <p><strong>Q/E</strong> - 对角线移动</p>
+    </div>
+    
+    <div class="controls">
+        <button id="generateBtn">生成六边形迷宫</button>
+        <button id="startGameBtn">开始游戏模式</button>
+        <button id="stopGameBtn">停止游戏模式</button>
+    </div>
+    
+    <canvas id="canvas" width="800" height="600"></canvas>
+    
+    <div id="status">就绪</div>
+
+    <!-- 核心系统 -->
+    <script src="js/maze.js"></script>
+    <script src="js/generator.js"></script>
+    <script src="js/solver.js"></script>
+    
+    <!-- 第8阶段：复杂迷宫 -->
+    <script src="js/complex-mazes.js"></script>
+    <script src="js/complex-renderer.js"></script>
+    
+    <!-- 第7阶段：扩展功能 -->
+    <script src="js/extensions.js"></script>
+    
+    <script>
+        let hexMaze, renderer, gameMode;
+        const canvas = document.getElementById('canvas');
+        const status = document.getElementById('status');
+        
+        // 生成迷宫
+        document.getElementById('generateBtn').addEventListener('click', async () => {
+            try {
+                status.textContent = '正在生成六边形迷宫...';
+                
+                // 创建六边形迷宫 (10x10)
+                hexMaze = new MazeComplex.HexMaze(10, 10);
+                
+                // 创建渲染器
+                renderer = new MazeComplexRenderers.HexRenderer(canvas, hexMaze);
+                
+                // 生成迷宫
+                const generator = new RecursiveBacktrackingGenerator(hexMaze);
+                generator.renderer = renderer;
+                await generator.generate(0); // 瞬间生成
+                
+                // 绘制迷宫
+                renderer.draw();
+                
+                status.textContent = '六边形迷宫已生成';
+            } catch (error) {
+                console.error('生成迷宫失败:', error);
+                status.textContent = '生成失败: ' + error.message;
+            }
+        });
+        
+        // 开始游戏模式
+        document.getElementById('startGameBtn').addEventListener('click', () => {
+            if (!hexMaze || !renderer) {
+                status.textContent = '请先生成迷宫';
+                return;
+            }
+            
+            try {
+                // 停止现有游戏模式
+                if (gameMode) {
+                    gameMode.stop();
+                }
+                
+                // 创建并启动游戏模式
+                gameMode = new GameMode(hexMaze, renderer);
+                gameMode.start();
+                
+                status.textContent = '游戏模式已启动 - 使用WASD/QE键移动';
+            } catch (error) {
+                console.error('启动游戏模式失败:', error);
+                status.textContent = '启动失败: ' + error.message;
+            }
+        });
+        
+        // 停止游戏模式
+        document.getElementById('stopGameBtn').addEventListener('click', () => {
+            if (gameMode) {
+                gameMode.stop();
+                gameMode = null;
+                status.textContent = '游戏模式已停止';
+                
+                // 重新绘制迷宫
+                if (renderer) {
+                    renderer.draw();
+                }
+            }
+        });
+        
+        // 页面加载完成后显示提示
+        window.addEventListener('load', () => {
+            status.textContent = '页面已加载，请点击"生成六边形迷宫"按钮开始';
+        });
+    </script>
+</body>
+</html>

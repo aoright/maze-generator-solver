@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>无限迷宫测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+            background-color: #f0f0f0;
+        }
+        #mazeCanvas {
+            border: 2px solid #333;
+            background-color: #fff;
+        }
+        .controls {
+            margin: 20px 0;
+            display: flex;
+            gap: 10px;
+        }
+        button {
+            padding: 10px 15px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .info {
+            margin-top: 20px;
+            padding: 10px;
+            background-color: #e0e0e0;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1>无限迷宫测试</h1>
+    <canvas id="mazeCanvas" width="800" height="600"></canvas>
+    
+    <div class="controls">
+        <button onclick="moveUp()">↑</button>
+        <button onclick="moveLeft()">←</button>
+        <button onclick="moveRight()">→</button>
+        <button onclick="moveDown()">↓</button>
+        <button onclick="showInfo()">显示信息</button>
+    </div>
+    
+    <div class="info" id="infoPanel">
+        <p>使用方向键或按钮移动玩家</p>
+    </div>
+
+    <!-- 加载必要的脚本 -->
+    <script src="js/maze.js"></script>
+    <script src="js/generator.js"></script>
+    <script src="js/advanced-mazes.js"></script>
+    <script src="js/complex-mazes.js"></script>
+    <script src="js/complex-renderer.js"></script>
+
+    <script>
+        let infiniteMaze;
+        let renderer;
+        
+        // 初始化无限迷宫
+        function init() {
+            const canvas = document.getElementById('mazeCanvas');
+            infiniteMaze = new MazeAdvanced.InfiniteMaze(20);
+            
+            // 加载初始区块
+            infiniteMaze.loadChunksAround(0, 0);
+            
+            // 创建渲染器
+            renderer = new MazeComplexRenderers.InfiniteRenderer(canvas, infiniteMaze);
+            
+            // 生成迷宫
+            generateMaze();
+        }
+        
+        // 生成迷宫
+        function generateMaze() {
+            // 为每个区块生成迷宫
+            const chunks = Array.from(infiniteMaze.chunks.values());
+            chunks.forEach(chunk => {
+                const generator = new RecursiveBacktrackingGenerator(chunk);
+                generator.generate(0); // 瞬间生成
+            });
+            
+            // 确保连接
+            infiniteMaze.ensureAllConnections();
+            
+            // 绘制
+            renderer.draw();
+        }
+        
+        // 移动函数
+        function moveUp() {
+            movePlayer(infiniteMaze.playerPos.row - 1, infiniteMaze.playerPos.col);
+        }
+        
+        function moveDown() {
+            movePlayer(infiniteMaze.playerPos.row + 1, infiniteMaze.playerPos.col);
+        }
+        
+        function moveLeft() {
+            movePlayer(infiniteMaze.playerPos.row, infiniteMaze.playerPos.col - 1);
+        }
+        
+        function moveRight() {
+            movePlayer(infiniteMaze.playerPos.row, infiniteMaze.playerPos.col + 1);
+        }
+        
+        function movePlayer(newRow, newCol) {
+            if (infiniteMaze.movePlayer(newRow, newCol)) {
+                renderer.cameraPos = { row: newRow, col: newCol };
+                renderer.draw();
+                updateInfo();
+            }
+        }
+        
+        // 显示信息
+        function showInfo() {
+            const infoPanel = document.getElementById('infoPanel');
+            const chunk = infiniteMaze.getChunkForCell(
+                infiniteMaze.playerPos.row, 
+                infiniteMaze.playerPos.col
+            );
+            
+            const distance = Math.sqrt(
+                chunk.chunkCoords.row * chunk.chunkCoords.row +
+                chunk.chunkCoords.col * chunk.chunkCoords.col
+            ).toFixed(1);
+            
+            infoPanel.innerHTML = `
+                <p><strong>位置:</strong> (${infiniteMaze.playerPos.row}, ${infiniteMaze.playerPos.col})</p>
+                <p><strong>区块坐标:</strong> (${chunk.chunkCoords.row}, ${chunk.chunkCoords.col})</p>
+                <p><strong>生物群系:</strong> ${chunk.biome.name}</p>
+                <p><strong>距起点:</strong> ${distance} 区块</p>
+                <p><strong>耐力:</strong> ${infiniteMaze.stamina.toFixed(0)}%</p>
+                <p><strong>钥匙:</strong> ${infiniteMaze.collectedKeys.size}</p>
+                <p><strong>食物:</strong> ${infiniteMaze.collectedFood}</p>
+                <p><strong>已加载区块:</strong> ${infiniteMaze.loadedChunks.size}</p>
+            `;
+        }
+        
+        function updateInfo() {
+            const infoPanel = document.getElementById('infoPanel');
+            infoPanel.innerHTML = `
+                <p><strong>位置:</strong> (${infiniteMaze.playerPos.row}, ${infiniteMaze.playerPos.col})</p>
+                <p>使用方向键或按钮移动玩家</p>
+            `;
+        }
+        
+        // 页面加载完成后初始化
+        window.onload = function() {
+            init();
+        };
+    </script>
+</body>
+</html>

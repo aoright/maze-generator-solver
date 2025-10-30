@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>传送门迷宫游戏模式测试</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            background: #1a1a1a;
+            color: #fff;
+        }
+        .container {
+            display: flex;
+            gap: 20px;
+        }
+        .controls {
+            width: 300px;
+        }
+        .game-area {
+            flex: 1;
+        }
+        canvas {
+            border: 2px solid #444;
+            background: #222;
+        }
+        button {
+            background: #444;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            margin: 5px;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        button:hover {
+            background: #666;
+        }
+        .status {
+            background: #333;
+            padding: 10px;
+            border-radius: 4px;
+            margin: 10px 0;
+        }
+        h1, h2 {
+            color: #4CAF50;
+        }
+    </style>
+</head>
+<body>
+    <h1>传送门迷宫游戏模式测试</h1>
+    
+    <div class="container">
+        <div class="controls">
+            <h2>控制面板</h2>
+            <button onclick="generateMaze()">生成传送门迷宫</button>
+            <button onclick="toggleGameMode()">切换游戏模式</button>
+            <div class="status">
+                <div>状态: <span id="status">就绪</span></div>
+                <div>游戏模式: <span id="gameModeStatus">关闭</span></div>
+            </div>
+            <h3>操作说明</h3>
+            <ul>
+                <li>方向键 - 移动</li>
+                <li>进入传送门格子会自动传送到配对的传送门</li>
+                <li>到达红色终点即获胜</li>
+            </ul>
+        </div>
+        
+        <div class="game-area">
+            <canvas id="mazeCanvas" width="600" height="600"></canvas>
+        </div>
+    </div>
+
+    <!-- 加载必要的脚本 -->
+    <script src="js/maze.js"></script>
+    <script src="js/generator.js"></script>
+    <script src="js/solver.js"></script>
+    <script src="js/renderer.js"></script>
+    <script src="js/complex-mazes.js"></script>
+    <script src="js/complex-renderer.js"></script>
+    <script src="js/extensions.js"></script>
+    
+    <script>
+        let maze, renderer, generator;
+        let gameMode = null;
+        let gameModeEnabled = false;
+        
+        // 初始化
+        window.onload = function() {
+            const canvas = document.getElementById('mazeCanvas');
+            // 创建传送门迷宫
+            generateMaze();
+        };
+        
+        // 生成传送门迷宫
+        function generateMaze() {
+            const canvas = document.getElementById('mazeCanvas');
+            
+            // 创建传送门迷宫 (15x15, 8个传送门)
+            maze = new MazeComplex.PortalMaze(15, 15, 8);
+            
+            // 创建渲染器
+            renderer = new MazeComplexRenderers.PortalRenderer(canvas, maze);
+            
+            // 创建生成器并生成迷宫
+            generator = new Generator(maze, renderer);
+            
+            // 生成迷宫
+            generator.generate(0).then(() => {
+                renderer.draw();
+                updateStatus('传送门迷宫已生成');
+            });
+        }
+        
+        // 切换游戏模式
+        function toggleGameMode() {
+            gameModeEnabled = !gameModeEnabled;
+            
+            if (gameModeEnabled) {
+                // 启动游戏模式
+                if (gameMode) {
+                    gameMode.stop();
+                }
+                gameMode = new MazeExtensions.GameMode(maze, renderer);
+                gameMode.start();
+                document.getElementById('gameModeStatus').textContent = '开启';
+                document.getElementById('gameModeStatus').style.color = 'lime';
+                updateStatus('游戏模式已启动 - 使用方向键移动');
+            } else {
+                // 停止游戏模式
+                if (gameMode) {
+                    gameMode.stop();
+                    gameMode = null;
+                }
+                document.getElementById('gameModeStatus').textContent = '关闭';
+                document.getElementById('gameModeStatus').style.color = 'white';
+                updateStatus('游戏模式已关闭');
+                // 重新绘制迷宫
+                renderer.draw();
+            }
+        }
+        
+        // 更新状态显示
+        function updateStatus(message) {
+            document.getElementById('status').textContent = message;
+        }
+    </script>
+</body>
+</html>

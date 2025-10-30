@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>修复测试</title>
+</head>
+<body>
+    <h1>修复验证</h1>
+    <div id="status">正在检查...</div>
+    
+    <script>
+        const checks = [];
+        
+        // 检查 1: GameMode 是否定义
+        setTimeout(() => {
+            if (typeof GameMode !== 'undefined') {
+                checks.push('✅ GameMode 已定义');
+            } else {
+                checks.push('❌ GameMode 未定义');
+            }
+            
+            // 检查 2: 复杂迷宫类是否定义
+            if (typeof MazeComplex !== 'undefined') {
+                checks.push('✅ MazeComplex 已加载');
+            } else {
+                checks.push('❌ MazeComplex 未加载');
+            }
+            
+            // 检查 3: 高级扩展是否定义
+            if (typeof MazeAdvancedExtensions !== 'undefined') {
+                checks.push('✅ MazeAdvancedExtensions 已加载');
+            } else {
+                checks.push('❌ MazeAdvancedExtensions 未加载');
+            }
+            
+            // 显示结果
+            document.getElementById('status').innerHTML = checks.join('<br>');
+        }, 100);
+    </script>
+    
+    <!-- 加载必要的脚本 -->
+    <script src="js/maze.js"></script>
+    <script src="js/generator.js"></script>
+    <script src="js/solver.js"></script>
+    <script src="js/renderer.js"></script>
+    <script src="js/extensions-advanced.js"></script>
+    <script src="js/complex-mazes.js"></script>
+    <script src="js/complex-renderer.js"></script>
+    <script src="js/advanced-mazes.js"></script>
+    <script src="js/extensions.js"></script>
+</body>
+</html>
