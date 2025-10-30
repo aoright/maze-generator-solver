@@ -865,7 +865,6 @@ MIT License
 
 ## 联系方式
 
-- GitHub Issues: [报告问题](https://github.com/...)
 - 邮箱: aorightyan@gamil.com
 
 ---
