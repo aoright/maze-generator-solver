@@ -1,5 +1,7 @@
 # 迷宫生成与求解器 - 完整使用指南
 
+在线体验：https://aoright.github.io/maze-generator-solver/
+
 ## 目录
 
 1. [快速开始](#快速开始)
