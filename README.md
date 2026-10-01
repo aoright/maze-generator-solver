@@ -1,6 +1,22 @@
 # 迷宫生成与求解器 - 完整使用指南
 
-在线体验：https://aoright.github.io/maze-generator-solver/
+[![Static Asset Validation CI](https://github.com/aoright/maze-generator-solver/actions/workflows/ci.yml/badge.svg)](https://github.com/aoright/maze-generator-solver/actions/workflows/ci.yml)
+
+🌐 **在线体验 (Live Demo)**：[https://aoright.github.io/maze-generator-solver/](https://aoright.github.io/maze-generator-solver/)
+🤖 **LLM & AI 开发者文档**：[`llms.txt`](./llms.txt)
+
+---
+
+### 🚀 交互式 Demo 演示链接 (Interactive Demo Links)
+
+| 演示模块 | 说明 | 在线 Live Demo 链接 |
+|---|---|---|
+| 🎮 **主可视化器 (Main Visualizer)** | 2D/3D/4D、加权、量子、相对论等全功能可视化界面 | [开启体验](https://aoright.github.io/maze-generator-solver/index.html) |
+| ⬡ **六边形迷宫 (Hexagonal Maze)** | 轴坐标系六边形网格生成与交互游戏 | [体验六边形迷宫](https://aoright.github.io/maze-generator-solver/test-hex-game.html) |
+| ♾️ **无限程序化迷宫 (Infinite Maze)** | 无限 LOD 动态区块加载与生成 | [体验无限迷宫](https://aoright.github.io/maze-generator-solver/test-infinite-maze.html) |
+| 🌀 **传送门迷宫 (Portal Maze)** | 非欧几里得传送门路径穿梭演示 | [体验传送门迷宫](https://aoright.github.io/maze-generator-solver/test-portal-game.html) |
+
+---
 
 ## 目录
 

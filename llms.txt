@@ -1,0 +1,85 @@
+# Maze Generator & Solver Visualizer
+
+> An interactive web-based visualizer for 2D, 3D, 4D, Hexagonal, Circular, Quantum, Weighted, and Relativistic maze generation and pathfinding algorithms built with HTML5 Canvas and JavaScript.
+
+## Overview
+
+This visualizer provides real-time step-by-step animations for maze generation and pathfinding algorithms. It supports standard 2D grid mazes, 3D multi-layer mazes, 4D hypercube mazes, hexagonal grids, circular polar grids, weighted terrains, quantum superposition states, dynamic obstacle mazes, and relativistic spacetime mazes.
+
+- **Live Demo**: https://aoright.github.io/maze-generator-solver/
+- **Repository**: https://github.com/aoright/maze-generator-solver
+
+---
+
+## Core Algorithms
+
+### 1. Maze Generation Algorithms
+
+#### Depth-First Search (DFS) / Recursive Backtracking
+- **Description**: A randomized stack-based depth-first search approach. Starting from an initial cell, it randomly picks an unvisited adjacent neighbor, removes the wall between them, and marks the new cell as visited before pushing it onto a stack. When stuck in a dead-end, it backtracks along the stack until an unvisited neighbor is found.
+- **Characteristics**: Creates mazes with long winding corridors, low branching factors, and moderate difficulty.
+- **Time Complexity**: $O(V + E) = O(N)$ where $N$ is total cells.
+- **Space Complexity**: $O(N)$ for recursion stack / explicit stack.
+- **Implementation**: `RecursiveBacktrackingGenerator` in `js/generator.js`.
+
+#### Randomized Prim's Algorithm
+- **Description**: Based on minimum spanning tree construction. Starting from a single cell, all adjacent walls are added to a wall list. The algorithm repeatedly picks a random wall from the list. If the cell on the other side of the wall has not been visited yet, the wall is removed, and the newly visited cell's neighboring walls are added to the list.
+- **Characteristics**: Creates mazes with many short dead-ends and a high density of short branching corridors.
+- **Time Complexity**: $O(N \log N)$ using a priority queue or randomized list.
+- **Space Complexity**: $O(N)$ for wall storage.
+- **Implementation**: `PrimGenerator` in `js/generator.js`.
+
+#### Other Supported Generation Algorithms
+- **Randomized Kruskal's Algorithm**: Uses Disjoint Set Union (DSU) / Union-Find to merge unconnected cells by randomly removing walls without introducing cycles. (`KruskalGenerator`)
+- **Wilson's Algorithm**: Uses loop-erased random walks to generate uniform spanning trees unbiasedly. (`WilsonGenerator`)
+- **Recursive Division**: Starts with an open area and recursively divides space with random horizontal and vertical walls containing single passages. (`RecursiveDivisionGenerator`)
+- **Eller's Algorithm**: Row-by-row generation using set membership, enabling memory-efficient infinite maze generation. (`EllerGenerator`)
+- **Binary Tree & Sidewinder**: Fast grid-aligned generation algorithms with distinct directional biases. (`BinaryTreeGenerator`, `SidewinderGenerator`)
+
+---
+
+### 2. Pathfinding & Search Algorithms
+
+#### A* Search Algorithm
+- **Description**: An informed best-first search algorithm that finds the shortest path by evaluating nodes using $f(n) = g(n) + h(n)$, where $g(n)$ is the exact cost from the start node to node $n$, and $h(n)$ is an admissible heuristic estimate (e.g., Manhattan distance $|x_1 - x_2| + |y_1 - y_2|$ for grid graphs or Euclidean distance for continuous metrics) to the goal.
+- **Optimality**: Guaranteed to find the optimal shortest path when $h(n)$ is admissible (never overestimates actual cost).
+- **Time Complexity**: $O(E \log V)$ with a priority queue, drastically reducing visited cells compared to unguided searches.
+- **Space Complexity**: $O(V)$ to store visited states and priority queue nodes.
+- **Implementation**: `AStarSolver` in `js/solver.js`.
+
+#### Dijkstra's Algorithm
+- **Description**: A weighted shortest-path graph search algorithm. It maintains a tentative distance to every node, initialized to infinity, with the start node set to zero. At each iteration, it selects the unvisited node with the minimum distance, updates distance estimates to all its unvisited neighbors (relaxation step), and marks it as visited.
+- **Optimality**: Guarantees the shortest path in non-negative weighted graphs.
+- **Relationship to A***: Equivalent to A* search where heuristic $h(n) = 0$.
+- **Time Complexity**: $O((V + E) \log V)$ using binary min-heaps.
+- **Space Complexity**: $O(V)$ for distance table and priority queue.
+- **Implementation**: `DijkstraSolver` in `js/solver.js`.
+
+#### Other Supported Pathfinding Algorithms
+- **Breadth-First Search (BFS)**: Unweighted shortest path search using FIFO queue. (`BFSSolver`)
+- **Depth-First Search (DFS)**: Non-optimal fast depth search using LIFO stack. (`DFSSolver`)
+- **Jump Point Search (JPS)**: Optimization of A* for uniform cost grid maps that prunes symmetric neighbor paths. (`JPSSolver`)
+- **Bidirectional BFS**: Simultaneous search from start and goal nodes meeting in the middle for 2-4x speedup. (`BidirectionalBFSSolver`)
+
+---
+
+## File Structure & Module Map
+
+- `index.html`: Main visualizer web UI with controls for algorithm selection, grid dimensions, animation speed, and mode switching.
+- `js/maze.js`: Data structures for 2D Grid Cells (`Cell`), Maze model (`Maze`), wall management, and graph neighbor queries.
+- `js/generator.js`: Implementations of all maze generation algorithms and `GeneratorFactory`.
+- `js/solver.js`: Implementations of all pathfinding solvers and `SolverFactory`.
+- `js/renderer.js`: HTML5 Canvas rendering engine supporting classic, neon, nature, cyberpunk, and minimal visual themes.
+- `js/controls.js`: UI event handlers, keyboard shortcuts, interactive controls, and slider listeners.
+- `js/complex-mazes.js`: Data structures for 3D multi-layer, weighted terrain, dynamic walls, hexagonal grids, circular polar grids, island clusters, and portal mazes.
+- `js/complex-renderer.js`: Specialized renderers for non-standard grids (Hexagonal, Polar, 3D ISO projection, Portals, Terrain weights).
+- `js/advanced-mazes.js`: Advanced dimensions and physical models (4D hypercube, Quantum superposition, Relativistic gravity fields, Turing Halting machine simulation, Chaos/Fractal mazes, NP-complete graphs, Infinite procedural chunking).
+- `js/extensions.js` & `js/extensions-advanced.js`: Feature extensions including Fog of War mode, Time Trial challenges, Distance Heatmap rendering, Path comparison benchmarking, and SVG/JSON export.
+
+---
+
+## Technical Features & Modernization
+
+1. **Modular JS Architecture**: Clean OOP hierarchy with base classes (`MazeGenerator`, `MazeSolver`) and factory patterns.
+2. **Asynchronous Visualization**: Step-by-step frame rendering using async/await non-blocking sleep loops.
+3. **Static Asset Pipeline**: Zero-dependency frontend runnable directly in any modern browser or hosted via GitHub Pages.
